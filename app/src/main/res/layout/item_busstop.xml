@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/busStop_linear"
+    android:orientation="horizontal"
+    android:layout_centerVertical="true"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:padding="15dp">
+
+    <TextView
+        android:id="@+id/busStop_name"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_weight="1"
+        android:background="@drawable/round_left"
+        android:layout_gravity="center_vertical"
+        android:gravity="center"
+        android:text="부산 고등학교"
+        android:textColor="#2f3640"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/busStop_number"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_weight="1"
+        android:background="@drawable/round_right"
+        android:layout_gravity="center_vertical"
+        android:gravity="center_vertical"
+        android:text="05033"
+        android:textColor="#2f3640"
+
+        android:textSize="25sp" />
+
+</LinearLayout>
