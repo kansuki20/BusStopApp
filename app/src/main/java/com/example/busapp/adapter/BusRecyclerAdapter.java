@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.busapp.BusStopInfoActivity;
 import com.example.busapp.R;
+import com.example.busapp.db.MyBusStop;
 import com.example.busapp.model.BusInfoItem;
 import com.example.busapp.model.BusListItem;
 
@@ -36,7 +37,7 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class BusRecyclerAdapter extends RecyclerView.Adapter<BusRecyclerAdapter.ItemViewHolder> implements Serializable {
-    private ArrayList<BusListItem> itemList = new ArrayList<>();
+    private ArrayList<MyBusStop> itemList = new ArrayList<>();
 
     OkHttpClient client = new OkHttpClient();
     Intent intent;
@@ -89,7 +90,7 @@ public class BusRecyclerAdapter extends RecyclerView.Adapter<BusRecyclerAdapter.
         return itemList.size();
     }
 
-    public void addItem(BusListItem item) {
+    public void addItem(MyBusStop item) {
         itemList.add(item);
     }
     static class ItemViewHolder extends RecyclerView.ViewHolder {
