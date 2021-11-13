@@ -7,11 +7,11 @@ import androidx.room.PrimaryKey;
 
 @Entity
 public class MyBusStop {
-    @PrimaryKey @NonNull
-    String busStopNumber;
     @ColumnInfo(name = "bus_stop_name")
     String busStopName;
-
+    @PrimaryKey @NonNull
+    String busStopNumber;
+    
     public MyBusStop(@NonNull String busStopNumber, String busStopName) {
         this.busStopNumber = busStopNumber;
         this.busStopName = busStopName;

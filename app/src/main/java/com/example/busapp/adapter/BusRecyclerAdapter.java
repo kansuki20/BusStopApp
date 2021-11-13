@@ -51,7 +51,6 @@ public class BusRecyclerAdapter extends RecyclerView.Adapter<BusRecyclerAdapter.
 
         return new ItemViewHolder(view);
     }
-
     @Override
     public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
         holder.textView_stopName.setText(itemList.get(position).getBusStopName());
