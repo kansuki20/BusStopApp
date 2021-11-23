@@ -1,20 +1,28 @@
 package com.example.busapp.adapter;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.SystemClock;
 import android.util.Xml;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
+import androidx.room.RoomDatabase;
 
 import com.example.busapp.BusStopInfoActivity;
 import com.example.busapp.R;
 import com.example.busapp.db.MyBusStop;
+import com.example.busapp.db.MyBusStopDB;
+import com.example.busapp.logic.XmlParsingLogic;
 import com.example.busapp.model.BusInfoItem;
 import com.example.busapp.model.BusListItem;
 
@@ -38,11 +46,8 @@ import okhttp3.ResponseBody;
 
 public class BusRecyclerAdapter extends RecyclerView.Adapter<BusRecyclerAdapter.ItemViewHolder> implements Serializable {
     private ArrayList<MyBusStop> itemList = new ArrayList<>();
-
-    OkHttpClient client = new OkHttpClient();
-    Intent intent;
-    String serviceKey = "huDdeTmtzO4PkEqHHpjAlBpK1tTK4WTukS5gazmHdWSiwuQh4N%2Bn5TCVNy%2BVuBPfeOoXmfLpX%2BCUmirgyaAqcA%3D%3D";
-    String url;
+    // 중복 클릭 방지용 시간
+    private long time = 0;
 
     @NonNull
     @Override
@@ -55,33 +60,6 @@ public class BusRecyclerAdapter extends RecyclerView.Adapter<BusRecyclerAdapter.
     public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
         holder.textView_stopName.setText(itemList.get(position).getBusStopName());
         holder.textView_stopNumber.setText(itemList.get(position).getBusStopNumber());
-        holder.linearLayout.setOnClickListener(v -> {
-            String busStopName = holder.textView_stopName.getText().toString();
-            String busStopNumber = holder.textView_stopNumber.getText().toString();
-            url = "http://apis.data.go.kr/6260000/BusanBIMS/bitArrByArsno?serviceKey="
-                    + serviceKey + "&arsno=" + busStopNumber;
-
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Request request = new Request.Builder()
-                                .url(url).build();
-                        Response response = client.newCall(request).execute();
-                        String xml = response.body().string();
-                        ArrayList<BusInfoItem> busInfoItems;
-                        busInfoItems = xmlParser(xml);
-                        intent = new Intent(v.getContext(), BusStopInfoActivity.class);
-                        intent.putExtra("busStopName", busStopName);
-                        intent.putExtra("arsno", busStopNumber);
-                        intent.putExtra("busInfoItems", busInfoItems);
-                        v.getContext().startActivity(intent);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }).start();
-        });
     }
 
     @Override
@@ -92,61 +70,73 @@ public class BusRecyclerAdapter extends RecyclerView.Adapter<BusRecyclerAdapter.
     public void addItem(MyBusStop item) {
         itemList.add(item);
     }
-    static class ItemViewHolder extends RecyclerView.ViewHolder {
+    class ItemViewHolder extends RecyclerView.ViewHolder {
         TextView textView_stopName;
         TextView textView_stopNumber;
         LinearLayout linearLayout;
+
+        Intent intent;
+        AlertDialog.Builder builder;
 
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
             textView_stopName = itemView.findViewById(R.id.busStop_name);
             textView_stopNumber = itemView.findViewById(R.id.busStop_number);
             linearLayout = itemView.findViewById(R.id.busStop_linear);
+            linearLayout.setOnClickListener(v -> {
+                // 중복 클릭 방지용 로직
+                if (SystemClock.elapsedRealtime() - time < 3000 ) {
+                    return;
+                }
+                time = SystemClock.elapsedRealtime();
+                //---------------------------
+                String busStopName = textView_stopName.getText().toString();
+                String busStopNumber = textView_stopNumber.getText().toString();
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            XmlParsingLogic xmlParsingLogic = new XmlParsingLogic();
+                            ArrayList<BusInfoItem> busInfoItems = xmlParsingLogic.xmlParser(busStopNumber);
+                            intent = new Intent(v.getContext(), BusStopInfoActivity.class);
+                            intent.putExtra("busStopName", busStopName);
+                            intent.putExtra("arsno", busStopNumber);
+                            intent.putExtra("busInfoItems", busInfoItems);
+                            v.getContext().startActivity(intent);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+            });
+            linearLayout.setOnLongClickListener(v -> {
+                MyBusStopDB myBusStopDB = Room.databaseBuilder
+                        (v.getContext(), MyBusStopDB.class, "my-bus-stop-DB")
+                        .allowMainThreadQueries()
+                        .build();
+                builder = new AlertDialog.Builder(v.getContext());
+                builder.setTitle(textView_stopName.getText().toString())
+                        .setMessage("삭제하시겠습니까?");
+                builder.setPositiveButton("예", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String busNum = textView_stopNumber.getText().toString();
+                        int position = getBindingAdapterPosition();
+                        myBusStopDB.myBusStopDao().deleteOne(busNum);
+                        itemList.remove(position);
+                        notifyItemRemoved(position);
+                        Toast.makeText(v.getContext(), "삭제되었습니다.", Toast.LENGTH_SHORT).show();
+                    }
+                }).setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+                return true;
+            });
         }
     }
-
-    private ArrayList<BusInfoItem> xmlParser(String xml) throws XmlPullParserException, IOException {
-        ArrayList<BusInfoItem> busInfoItems = new ArrayList<>();
-        BusInfoItem busInfoItem = null;
-
-        XmlPullParser parser = Xml.newPullParser();
-        parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-        parser.setInput(new StringReader(xml));
-        String text = "";
-        int eventType = parser.getEventType();
-        while (eventType != XmlPullParser.END_DOCUMENT) {
-            String tagName = parser.getName();
-            switch (eventType) {
-                case XmlPullParser.START_TAG:
-                    if (tagName.equals("item")) {
-                        busInfoItem = new BusInfoItem();
-                    }
-                    break;
-                case XmlPullParser.TEXT:
-                    text = parser.getText();
-                    break;
-                case XmlPullParser.END_TAG:
-                    switch (tagName) {
-                        case "item":
-                            busInfoItems.add(busInfoItem);
-                            break;
-                        case "lineno":
-                            busInfoItem.setBusNo(text);
-                            break;
-                        case "min1":
-                            busInfoItem.setFirstMin(text);
-                            break;
-                        case "min2":
-                            busInfoItem.setSecondMin(text);
-                            break;
-                    }
-                    break;
-            }
-            eventType = parser.next();
-        }
-
-        return busInfoItems;
-    }
-
-
 }

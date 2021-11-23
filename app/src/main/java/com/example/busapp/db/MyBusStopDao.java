@@ -16,7 +16,6 @@ public interface MyBusStopDao {
     MyBusStop getOne(String busStopNumber);
     @Insert
     void insert(MyBusStop myBusStop);
-    // 나중에 기능 추가 (메인 화면에서 롱터치해서 삭제)
-    @Query("DELETE FROM MyBusStop")
-    void delete();
+    @Query("DELETE FROM MyBusStop WHERE busStopNumber LIKE :busStopNumber")
+    void deleteOne(String busStopNumber);
 }

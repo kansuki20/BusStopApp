@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".BusStopInfoActivity">
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -45,19 +44,21 @@
             android:textSize="30sp"
             android:textColor="#2f3640"
             android:gravity="center"/>
-        <LinearLayout
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/bus_stop_info_swipe"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="20dp"
-            android:background="@drawable/round_linear">
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerview_busStopInfo"
+            android:layout_height="match_parent">
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="15dp"/>
-        </LinearLayout>
-
-
-
+                android:layout_margin="20dp"
+                android:background="@drawable/round_linear">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerview_busStopInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="15dp"/>
+            </LinearLayout>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

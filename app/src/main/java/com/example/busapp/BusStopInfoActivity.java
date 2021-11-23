@@ -5,17 +5,21 @@ import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.util.LogPrinter;
 import android.util.Xml;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.busapp.adapter.BusRecyclerAdapter;
 import com.example.busapp.adapter.BusStopInfoRecyclerAdapter;
 import com.example.busapp.db.MyBusStop;
 import com.example.busapp.db.MyBusStopDB;
@@ -42,16 +46,15 @@ public class BusStopInfoActivity extends AppCompatActivity implements Serializab
     private TextView tvBusStopInfo_number;
     private Button button;
     private RecyclerView recyclerView;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     private BusStopInfoRecyclerAdapter adapter;
 
-    private OkHttpClient client = new OkHttpClient();
-
     private Intent intent;
 
-    String busStopName;
-    String arsno;
-    ArrayList<BusInfoItem> busInfoItems;
+    private String busStopName;
+    private String arsno;
+    private ArrayList<BusInfoItem> busInfoItems;
 
     private MyBusStopDB myBusStopDB;
 
@@ -91,5 +94,18 @@ public class BusStopInfoActivity extends AppCompatActivity implements Serializab
         adapter = new BusStopInfoRecyclerAdapter();
         adapter.addItems(busInfoItems);
         recyclerView.setAdapter(adapter);
+
+        // 새로고침 코드 넣기
+        // 파싱하고 api로 받아오는 로직을 따로 빼서 파일 하나로 통일시키면 이거 될듯
+        // 따로 빼면 뒤로가기 메소드도 가능할 듯
+//        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//                BusRecyclerAdapter adapter = new BusRecyclerAdapter();
+//                adapter.notifyDataSetChanged();
+//                swipeRefreshLayout.setRefreshing(false);
+//            }
+//        });
     }
+
 }

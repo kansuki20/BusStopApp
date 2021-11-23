@@ -55,6 +55,6 @@ dependencies {
     annotationProcessor "androidx.room:room-compiler:$room_version"
     // -----------------Room DB---------------------
 
-
-
+    // Swipe 효과
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 }
