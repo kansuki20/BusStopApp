@@ -1,5 +1,6 @@
 package com.example.busapp.adapter;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -22,6 +23,7 @@ import com.example.busapp.BusStopInfoActivity;
 import com.example.busapp.R;
 import com.example.busapp.db.MyBusStop;
 import com.example.busapp.db.MyBusStopDB;
+import com.example.busapp.logic.LoadingDialog;
 import com.example.busapp.logic.XmlParsingLogic;
 import com.example.busapp.model.BusInfoItem;
 import com.example.busapp.model.BusListItem;
@@ -49,6 +51,8 @@ public class BusRecyclerAdapter extends RecyclerView.Adapter<BusRecyclerAdapter.
     // 중복 클릭 방지용 시간
     private long time = 0;
 
+    LoadingDialog loadingDialog;
+
     @NonNull
     @Override
     public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -67,9 +71,6 @@ public class BusRecyclerAdapter extends RecyclerView.Adapter<BusRecyclerAdapter.
         return itemList.size();
     }
 
-    public void addItem(MyBusStop item) {
-        itemList.add(item);
-    }
     public void addItems(ArrayList<MyBusStop> myBusStops) {
         itemList = myBusStops;
     }
@@ -84,10 +85,13 @@ public class BusRecyclerAdapter extends RecyclerView.Adapter<BusRecyclerAdapter.
 
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
+            loadingDialog = new LoadingDialog(itemView.getContext());
+
             textView_stopName = itemView.findViewById(R.id.busStop_name);
             textView_stopNumber = itemView.findViewById(R.id.busStop_number);
             linearLayout = itemView.findViewById(R.id.busStop_linear);
             linearLayout.setOnClickListener(v -> {
+                loadingDialog.dialogOn();
                 // 중복 클릭 방지용 로직
                 if (SystemClock.elapsedRealtime() - time < 3000 ) {
                     return;
@@ -107,6 +111,8 @@ public class BusRecyclerAdapter extends RecyclerView.Adapter<BusRecyclerAdapter.
                             intent.putExtra("busStopName", busStopName);
                             intent.putExtra("arsno", busStopNumber);
                             intent.putExtra("busInfoItems", busInfoItems);
+                            loadingDialog.dialogOff();
+                            ((Activity)v.getContext()).finish();
                             v.getContext().startActivity(intent);
                         } catch (Exception e) {
                             e.printStackTrace();

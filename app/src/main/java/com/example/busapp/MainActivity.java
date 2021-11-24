@@ -5,20 +5,22 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.example.busapp.adapter.BusRecyclerAdapter;
 import com.example.busapp.db.BusStop;
 import com.example.busapp.db.BusStopDB;
 import com.example.busapp.db.MyBusStop;
 import com.example.busapp.db.MyBusStopDB;
+import com.example.busapp.logic.LoadingDialog;
 import com.example.busapp.logic.XmlParsingLogic;
 import com.example.busapp.model.BusInfoItem;
 
@@ -39,8 +41,6 @@ public class MainActivity extends AppCompatActivity {
     private MyBusStopDB myBusStopDB = null;
     //busanBus.txt 파싱용
     private String line = null;
-    //RecyclerView 아이템 개수 카운트 용
-    private int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,33 +86,28 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerview_busStopList);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
+
+        List<MyBusStop> myBusStopList = myBusStopDB.myBusStopDao().getAll();
+        ArrayList<MyBusStop> myBusStops = new ArrayList<>();
+
+        for (int i=0; i<myBusStopList.size(); i++)
+            myBusStops.add(myBusStopList.get(i));
+
         adapter = new BusRecyclerAdapter();
-        List<MyBusStop> myBusStops = myBusStopDB.myBusStopDao().getAll();
-        count = myBusStopDB.myBusStopDao().getCount();
-        for (int i = 0; i < myBusStops.size(); i++)
-            adapter.addItem(myBusStops.get(i));
+        adapter.addItems(myBusStops);
         recyclerView.setAdapter(adapter);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Toast.makeText(this, String.valueOf(count), Toast.LENGTH_SHORT).show();
     }
 
     private OnItemClickListener clickListener = new OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            LoadingDialog loadingDialog = new LoadingDialog(view.getContext());
+            loadingDialog.dialogOn();
+
             XmlParsingLogic xmlParsingLogic = new XmlParsingLogic();
 
             String busStopInfo = ((TextView)view).getText().toString();
             String arsno = busStopInfo.split("\t")[0];
-
             Intent intent = new Intent(view.getContext(), BusStopInfoActivity.class);
             new Thread(new Runnable() {
                 @Override
@@ -122,6 +117,8 @@ public class MainActivity extends AppCompatActivity {
                         intent.putExtra("busStopName", busStopInfo.split("\t")[2]);
                         intent.putExtra("arsno", busStopInfo.split("\t")[0]);
                         intent.putExtra("busInfoItems", busInfoItems);
+                        loadingDialog.dialogOff();
+                        finish();
                         view.getContext().startActivity(intent);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -130,4 +127,7 @@ public class MainActivity extends AppCompatActivity {
             }).start();
         }
     };
+
+
+
 }

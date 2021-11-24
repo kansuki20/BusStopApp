@@ -96,7 +96,6 @@ public class BusStopInfoActivity extends AppCompatActivity implements Serializab
         adapter.addItems(busInfoItems);
         recyclerView.setAdapter(adapter);
 
-        // 스와이프 새로고침 - 수정 필요
         swipeRefreshLayout = findViewById(R.id.refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -124,10 +123,12 @@ public class BusStopInfoActivity extends AppCompatActivity implements Serializab
             }
         });
     }
-
+    // 메인화면 새로고침
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-
+        finish();
+        intent = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(intent);
     }
 }
