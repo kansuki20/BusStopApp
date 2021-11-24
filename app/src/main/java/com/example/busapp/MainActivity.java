@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.busapp.adapter.BusRecyclerAdapter;
 import com.example.busapp.db.BusStop;
@@ -38,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
     private MyBusStopDB myBusStopDB = null;
     //busanBus.txt 파싱용
     private String line = null;
+    //RecyclerView 아이템 개수 카운트 용
+    private int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,15 +79,30 @@ public class MainActivity extends AppCompatActivity {
 
         autoCompleteTextView.setAdapter(baseAdapter);
         autoCompleteTextView.setOnItemClickListener(clickListener);
+        autoCompleteTextView.setOnClickListener(v -> {
+            autoCompleteTextView.setText("");
+        });
 
         recyclerView = findViewById(R.id.recyclerview_busStopList);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
         adapter = new BusRecyclerAdapter();
         List<MyBusStop> myBusStops = myBusStopDB.myBusStopDao().getAll();
+        count = myBusStopDB.myBusStopDao().getCount();
         for (int i = 0; i < myBusStops.size(); i++)
             adapter.addItem(myBusStops.get(i));
         recyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Toast.makeText(this, String.valueOf(count), Toast.LENGTH_SHORT).show();
     }
 
     private OnItemClickListener clickListener = new OnItemClickListener() {

@@ -14,6 +14,8 @@ public interface MyBusStopDao {
     List<MyBusStop> getAll();
     @Query("SELECT * FROM mybusstop WHERE busStopNumber LIKE :busStopNumber")
     MyBusStop getOne(String busStopNumber);
+    @Query("SELECT COUNT(*) FROM mybusstop")
+    int getCount();
     @Insert
     void insert(MyBusStop myBusStop);
     @Query("DELETE FROM MyBusStop WHERE busStopNumber LIKE :busStopNumber")

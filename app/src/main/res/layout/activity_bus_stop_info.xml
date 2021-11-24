@@ -44,21 +44,21 @@
             android:textSize="30sp"
             android:textColor="#2f3640"
             android:gravity="center"/>
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/bus_stop_info_swipe"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <LinearLayout
+            android:layout_height="match_parent"
+            android:layout_margin="20dp"
+            android:background="@drawable/round_linear">
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/refresh_layout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="20dp"
-                android:background="@drawable/round_linear">
+                android:layout_height="match_parent">
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerview_busStopInfo"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_margin="15dp"/>
-            </LinearLayout>
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+        </LinearLayout>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

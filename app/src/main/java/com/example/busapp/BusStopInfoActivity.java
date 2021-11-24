@@ -23,6 +23,7 @@ import com.example.busapp.adapter.BusRecyclerAdapter;
 import com.example.busapp.adapter.BusStopInfoRecyclerAdapter;
 import com.example.busapp.db.MyBusStop;
 import com.example.busapp.db.MyBusStopDB;
+import com.example.busapp.logic.XmlParsingLogic;
 import com.example.busapp.model.BusInfoItem;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -95,17 +96,38 @@ public class BusStopInfoActivity extends AppCompatActivity implements Serializab
         adapter.addItems(busInfoItems);
         recyclerView.setAdapter(adapter);
 
-        // 새로고침 코드 넣기
-        // 파싱하고 api로 받아오는 로직을 따로 빼서 파일 하나로 통일시키면 이거 될듯
-        // 따로 빼면 뒤로가기 메소드도 가능할 듯
-//        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-//            @Override
-//            public void onRefresh() {
-//                BusRecyclerAdapter adapter = new BusRecyclerAdapter();
-//                adapter.notifyDataSetChanged();
-//                swipeRefreshLayout.setRefreshing(false);
-//            }
-//        });
+        // 스와이프 새로고침 - 수정 필요
+        swipeRefreshLayout = findViewById(R.id.refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                XmlParsingLogic xmlParsingLogic = new XmlParsingLogic();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            ArrayList<BusInfoItem> refreshBusInfoItems = xmlParsingLogic.xmlParser(arsno);
+                            adapter.addItems(refreshBusInfoItems);
+                            adapter.notifyDataSetChanged();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                }, 500);
+            }
+        });
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+    }
 }

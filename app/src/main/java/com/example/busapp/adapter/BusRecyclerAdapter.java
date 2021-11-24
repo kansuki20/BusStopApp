@@ -70,6 +70,10 @@ public class BusRecyclerAdapter extends RecyclerView.Adapter<BusRecyclerAdapter.
     public void addItem(MyBusStop item) {
         itemList.add(item);
     }
+    public void addItems(ArrayList<MyBusStop> myBusStops) {
+        itemList = myBusStops;
+    }
+
     class ItemViewHolder extends RecyclerView.ViewHolder {
         TextView textView_stopName;
         TextView textView_stopNumber;
