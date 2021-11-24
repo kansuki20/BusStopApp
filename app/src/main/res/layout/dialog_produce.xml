@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:orientation="vertical"
+    android:background="@drawable/round_linear_dialog">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Bus Logo"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:gravity="center"
+        android:layout_marginBottom="10dp"/>
+    <TextView
+        android:id="@+id/bus_logo_producer_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="제작자 홈페이지"
+        android:textSize="15dp"
+        android:gravity="center"
+        android:layout_margin="10dp"/>
+    <TextView
+        android:id="@+id/bus_logo_download_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="로고 다운로드 링크"
+        android:textSize="15dp"
+        android:gravity="center"
+        android:layout_margin="10dp"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Loading Icon"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"/>
+    <TextView
+        android:id="@+id/loading_icon_producer_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="제작자 홈페이지"
+        android:textSize="15dp"
+        android:gravity="center"
+        android:layout_margin="10dp"/>
+    <TextView
+        android:id="@+id/loading_icon_download_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="아이콘 다운로드 링크"
+        android:textSize="15dp"
+        android:gravity="center"
+        android:layout_margin="10dp"/>
+
+
+
+</LinearLayout>

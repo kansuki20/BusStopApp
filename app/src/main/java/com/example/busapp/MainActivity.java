@@ -5,15 +5,19 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import com.example.busapp.adapter.BusRecyclerAdapter;
 import com.example.busapp.db.BusStop;
@@ -21,6 +25,8 @@ import com.example.busapp.db.BusStopDB;
 import com.example.busapp.db.MyBusStop;
 import com.example.busapp.db.MyBusStopDB;
 import com.example.busapp.logic.LoadingDialog;
+import com.example.busapp.logic.LogoAndIconClickListener;
+import com.example.busapp.logic.LogoAndIconDialog;
 import com.example.busapp.logic.XmlParsingLogic;
 import com.example.busapp.model.BusInfoItem;
 
@@ -33,9 +39,11 @@ import java.util.List;
 import static android.widget.AdapterView.*;
 
 public class MainActivity extends AppCompatActivity {
+    private ImageView busLogoImageView;
     private AutoCompleteTextView autoCompleteTextView;
     private RecyclerView recyclerView;
     private BusRecyclerAdapter adapter;
+
     //DB
     private BusStopDB busStopDB = null;
     private MyBusStopDB myBusStopDB = null;
@@ -46,6 +54,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        busLogoImageView = (ImageView) findViewById(R.id.bus_logo_iv);
+        busLogoImageView.setOnClickListener(v -> {
+            new LogoAndIconDialog().showDialog(MainActivity.this);
+        });
+
         myBusStopDB = Room.databaseBuilder
                 (getApplicationContext(), MyBusStopDB.class, "my-bus-stop-DB")
                 .allowMainThreadQueries()
